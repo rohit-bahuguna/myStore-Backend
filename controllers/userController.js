@@ -217,4 +217,86 @@ exports.updateUserDetails = BigPromise(async (req, res, next) => {
 	});
 });
 
-exports.adminAllUser = BigPromise(async (req, res, next) => {});
+exports.adminAllUser = BigPromise(async (req, res, next) => {
+	const users = await userModel.find();
+
+	res.status(200).json({
+		success: true,
+		users
+	});
+});
+
+exports.managerAllUser = BigPromise(async (req, res, next) => {
+	const users = await userModel.find({ role: 'user' });
+
+	res.status(200).json({
+		success: true,
+		users
+	});
+});
+
+exports.adminGetOneUser = BigPromise(async (req, res, next) => {
+	const { id } = req.params;
+
+	const user = await userModel.findById(id);
+	if (!user) {
+		return next(new customError('user not found'), 400);
+	}
+	res.status(200).json({
+		success: true,
+		user
+	});
+});
+
+exports.adminUpdateOneUserDetails = BigPromise(async (req, res, next) => {
+	const { id } = req.params;
+	const { name, email, role } = req.body;
+
+	if (!name || !email || !role) {
+		return next(new customError('please provide all fields '), 400);
+	}
+
+	const newData = {
+		name: req.body.name,
+		email: req.body.email,
+		role: req.body.role
+	};
+
+	const user = await userModel.findByIdAndUpdate(id, newData, {
+		new: true,
+		runValidators: true
+	});
+	res.status(200).json({
+		success: true,
+		user
+	});
+});
+
+exports.adminDeleteOneUser = BigPromise(async (req, res, next) => {
+	const { id } = req.params;
+
+	if (!id) {
+		return next(new customError('no user selected'), 400);
+	}
+
+	const user = await userModel.findById(id);
+	if (!user) {
+		return next(new customError('user does not exist'), 400);
+	}
+	const imageId = user.photo.id;
+	console.log(imageId);
+	// delete photo on cloudnari
+	dumyImageUrl =
+		'https://res.cloudinary.com/dfbd4lyqe/image/upload/v1662800728/users/dumy/sampleImage_qroybc.png';
+
+	if (user.photo.secure_url !== dumyImageUrl) {
+		await cloudinary.uploader.destroy(imageId);
+	}
+
+	await user.remove();
+
+	res.status(200).json({
+		success: true,
+		message: 'user deleted successfully'
+	});
+});

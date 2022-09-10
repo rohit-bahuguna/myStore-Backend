@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const BigPromise = require('./bigPromise');
 const customError = require('../utils/customError');
 
-const isLoggedIn = BigPromise(async (req, res, next) => {
+exports.isLoggedIn = BigPromise(async (req, res, next) => {
 	let token = req.cookies.token; //  || req.header('Authorization').replace('Bearer ', '');
 
 	if (!token) {
@@ -16,4 +16,14 @@ const isLoggedIn = BigPromise(async (req, res, next) => {
 	next();
 });
 
-module.exports = isLoggedIn;
+exports.customRole = (...roles) => {
+	return (req, res, next) => {
+		if (!roles.includes(req.user.role)) {
+			return next(
+				new customError('You are not allow to access this resource'),
+				403
+			);
+		}
+		next();
+	};
+};
