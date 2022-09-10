@@ -19,6 +19,7 @@ app.set('view engine', 'ejs');
 // importing  all routers here
 const home = require('./routers/home');
 const user = require('./routers/user');
+const product = require('./routers/product');
 
 // using Built-in middleware
 app.use(express.json());
@@ -38,6 +39,7 @@ app.use(
 //using router middleware here
 app.use('/api/v1', home);
 app.use('/api/v1', user);
+app.use('/api/v1', product);
 
 // swagger docs route
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
