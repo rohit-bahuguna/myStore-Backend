@@ -1,9 +1,8 @@
 const express = require('express');
 const homeRouter = express.Router();
-const { home } = require('../controllers/homeController')
+const { home, signUpForm } = require('../controllers/homeController');
 
-homeRouter.route('/').get(home)
-
-
+homeRouter.route('/').get(home);
+homeRouter.route('/signupform').get(signUpForm);
 
 module.exports = homeRouter;
