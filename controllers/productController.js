@@ -6,18 +6,19 @@ const WhereClause = require('../utils/WhereClause');
 
 exports.addProducts = BigPromise(async (req, res, next) => {
 	// images
+
 	let imagesArray = [];
+
 	if (!req.files) {
 		return next(new customError('images are required'), 401);
 	}
 	if (req.files) {
-		for (let i = 0; i < req.files.photos.length; i++) {
-			let result = await cloudinary.uploader.upload(
-				req.files.photos[i].tempFilePath,
-				{
-					folder: 'products'
-				}
-			);
+		let photos = Object.keys(req.files).map(key => req.files[key]);
+
+		for (let i = 0; i < photos.length; i++) {
+			let result = await cloudinary.uploader.upload(photos[i].tempFilePath, {
+				folder: 'products'
+			});
 			imagesArray.push({
 				id: result.public_id,
 				secure_url: result.secure_url
@@ -43,9 +44,7 @@ exports.getAllProducts = BigPromise(async (req, res, next) => {
 	let products = new WhereClause(productModel.find(), req.query)
 		.search()
 		.filter();
-	// console.log(products);
-	// console.log('<=====================================>');
-	// console.log(await products.base.clone());
+
 	const filteredProductNumber = products.length;
 
 	products.pager(resultPerPage);
@@ -71,7 +70,7 @@ exports.adminGetAllProduct = BigPromise(async (req, res, next) => {
 
 exports.getOneProduct = BigPromise(async (req, res, next) => {
 	const { id } = req.params;
-	console.log(id);
+
 	const product = await productModel.findById(id);
 	if (!product) {
 		return next(new customError('no product found '), 400);
@@ -95,17 +94,16 @@ exports.adminUpdateProduct = BigPromise(async (req, res, next) => {
 	let imagesArray = [];
 
 	if (req.files) {
-		for (let i = 0; i < req.files.photos.length; i++) {
+		let photos = Object.keys(req.files).map(key => req.files[key]);
+
+		for (let i = 0; i < product.photos.length; i++) {
 			await cloudinary.uploader.destroy(product.photos[i].id);
 		}
 
-		for (let i = 0; i < req.files.photos.length; i++) {
-			let result = await cloudinary.uploader.upload(
-				req.files.photos[i].tempFilePath,
-				{
-					folder: 'products' // env
-				}
-			);
+		for (let i = 0; i < photos.length; i++) {
+			let result = await cloudinary.uploader.upload(photos[i].tempFilePath, {
+				folder: 'products' // env
+			});
 			imagesArray.push({
 				id: result.public_id,
 				secure_url: result.secure_url

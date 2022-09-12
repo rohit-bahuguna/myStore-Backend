@@ -7,6 +7,20 @@ const cloudinary = require('cloudinary').v2;
 const crypto = require('crypto');
 
 exports.signUp = BigPromise(async (req, res, next) => {
+	const { name, email, password } = req.body;
+
+	if (!name || !email || !password) {
+		return next(new customError('please provide all fileds', 400));
+	}
+	const isExistingUser = userModel.findOne({ email });
+
+	if (isExistingUser) {
+		return res.status(404).json({
+			success: false,
+			message: 'User Already Exist'
+		});
+	}
+
 	let result;
 	// uploading photo to cloudinary and geting back url and Id in response then storing it in result
 
@@ -24,11 +38,6 @@ exports.signUp = BigPromise(async (req, res, next) => {
 		};
 	}
 
-	const { name, email, password } = req.body;
-
-	if (!name || !email || !password) {
-		return next(new customError('please provide all fileds', 400));
-	}
 	const user = await userModel.create({
 		name,
 		email,
@@ -68,7 +77,7 @@ exports.logOut = BigPromise(async (req, res, next) => {
 		httpOnly: true
 	});
 
-	res.status(400).json({
+	res.status(200).json({
 		success: true,
 		message: 'user logout successfully'
 	});
