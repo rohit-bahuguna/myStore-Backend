@@ -8,7 +8,8 @@ const fileUpload = require('express-fileupload');
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
 const swaggerDocument = YAML.load('./swagger.yaml');
-
+const fs = require('fs');
+const path = require('path');
 const errorMiddleware = require('./middlewares/error');
 // created app here
 const app = express();
