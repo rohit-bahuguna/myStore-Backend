@@ -12,7 +12,7 @@ exports.signUp = BigPromise(async (req, res, next) => {
 	if (!name || !email || !password) {
 		return next(new customError('please provide all fileds', 400));
 	}
-	const isExistingUser = userModel.findOne({ email });
+	const isExistingUser = await userModel.findOne({ email });
 
 	if (isExistingUser) {
 		return res.status(404).json({
