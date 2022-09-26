@@ -4,9 +4,9 @@
   "description": "e-commerce api ",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
-    "dev": "nodemon index.js"
+    "dev": "NODE_ENV=DEVELOPMENT& nodemon server",
+    "prod": "NODE_ENV=PRODUCTION& nodemon backend/server"
   },
   "author": "rohit bahuguna",
   "license": "ISC",

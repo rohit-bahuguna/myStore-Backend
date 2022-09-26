@@ -192,7 +192,7 @@ exports.updateUserDetails = BigPromise(async (req, res, next) => {
 		name: req.body.name,
 		email: req.body.email
 	};
-
+	console.log(req.files);
 	if (req.files) {
 		const user = await userModel.findById(userId);
 		const imageId = user.photo.id;
@@ -202,10 +202,11 @@ exports.updateUserDetails = BigPromise(async (req, res, next) => {
 			'https://res.cloudinary.com/dfbd4lyqe/image/upload/v1662800728/users/dumy/sampleImage_qroybc.png';
 		if (user.photo.secure_url !== dumyImageUrl) {
 			const response = await cloudinary.uploader.destroy(imageId);
+			console.log(response, ' deleted');
 		}
 
 		let file = req.files.photo;
-		//console.log(file);
+		console.log(file);
 		result = await cloudinary.uploader.upload(file.tempFilePath, {
 			folder: 'users'
 		});

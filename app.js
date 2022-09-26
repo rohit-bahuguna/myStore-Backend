@@ -9,6 +9,7 @@ const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
 const swaggerDocument = YAML.load('./swagger.yaml');
 
+const errorMiddleware = require('./middlewares/error');
 // created app here
 const app = express();
 
@@ -20,6 +21,7 @@ app.set('view engine', 'ejs');
 const home = require('./routers/home');
 const user = require('./routers/user');
 const product = require('./routers/product');
+const payment = require('./routers/payment');
 
 // using Built-in middleware
 app.use(express.json());
@@ -28,11 +30,23 @@ app.use(express.urlencoded({ extended: true }));
 //using Third - party middleware
 app.use(
 	cors({
-		origin: 'http://localhost:3000',
+		origin: process.env.ORIGIN,
 		credentials: true
 	})
 );
-app.use(morgan('tiny'));
+if (process.env.NODE_ENV == 'PRODUCTION') {
+	const accessLogStream = fs.createWriteStream(
+		path.join(__dirname, 'access.log'),
+		{ flags: 'a' }
+	);
+	app.use(
+		morgan('  :method :url :response-time  [:date[web] ', {
+			stream: accessLogStream
+		})
+	);
+} else {
+	app.use(morgan('tiny'));
+}
 app.use(cookieParser());
 app.use(
 	fileUpload({
@@ -45,9 +59,14 @@ app.use(
 app.use('/api/v1', home);
 app.use('/api/v1', user);
 app.use('/api/v1', product);
+app.use('/api/v1', payment);
 
 // swagger docs route
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
+//error middleware
+
+app.use(errorMiddleware);
 
 // expored to index.js
 module.exports = app;
