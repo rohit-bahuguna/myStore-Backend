@@ -73,6 +73,10 @@ const productSchema = new mongoose.Schema(
 			type: mongoose.Schema.ObjectId,
 			ref: 'User',
 			required: true
+		},
+		stock: {
+			type: Number,
+			required: [true, 'please provide number of stock']
 		}
 	},
 	{ timestamps: true }

@@ -23,6 +23,7 @@ const home = require('./routers/home');
 const user = require('./routers/user');
 const product = require('./routers/product');
 const payment = require('./routers/payment');
+const order = require('./routers/order');
 
 // using Built-in middleware
 app.use(express.json());
@@ -61,6 +62,7 @@ app.use('/api/v1', home);
 app.use('/api/v1', user);
 app.use('/api/v1', product);
 app.use('/api/v1', payment);
+app.use('/api/v1', order);
 
 // swagger docs route
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
