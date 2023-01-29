@@ -5,8 +5,6 @@ const cloudinary = require('cloudinary').v2;
 const WhereClause = require('../utils/WhereClause');
 
 exports.addProducts = BigPromise(async (req, res, next) => {
-	// images
-
 	let imagesArray = [];
 
 	if (!req.files) {

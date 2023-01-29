@@ -192,7 +192,8 @@ exports.updateUserDetails = BigPromise(async (req, res, next) => {
 		name: req.body.name,
 		email: req.body.email
 	};
-	console.log(req.files);
+	//console.log(req.files['photo.0'])
+	
 	if (req.files) {
 		const user = await userModel.findById(userId);
 		const imageId = user.photo.id;
@@ -205,7 +206,7 @@ exports.updateUserDetails = BigPromise(async (req, res, next) => {
 			console.log(response, ' deleted');
 		}
 
-		let file = req.files.photo;
+		let file = req.files['photo.0'];
 		console.log(file);
 		result = await cloudinary.uploader.upload(file.tempFilePath, {
 			folder: 'users'
@@ -225,6 +226,16 @@ exports.updateUserDetails = BigPromise(async (req, res, next) => {
 		success: true,
 		user
 	});
+});
+
+exports.updateUserShippingInfo = BigPromise(async (req, res, next) => {
+	const userId = req.user.id;
+	//console.log(req.body);
+	const user = await userModel.findById(userId);
+	user.shippingInfo = req.body;
+	const updatedUserDetails = await user.save();
+	//	console.log(updatedAddress);
+	res.status(200).json({ success: true, updatedUserDetails });
 });
 
 exports.adminAllUser = BigPromise(async (req, res, next) => {

@@ -38,7 +38,17 @@ const userSchema = new mongoose.Schema(
 			}
 		},
 		forgotPasswordToken: String,
-		forgotPasswordExpiry: Date
+		forgotPasswordExpiry: Date,
+		shippingInfo: {
+			type: Object
+		},
+		orderHistory: [
+			{
+				type: mongoose.Schema.ObjectId,
+				ref: 'Order',
+				required: true
+			}
+		]
 	},
 	{ timestamps: true }
 );

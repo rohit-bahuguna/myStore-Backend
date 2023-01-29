@@ -14,7 +14,8 @@ const {
 	managerAllUser,
 	adminGetOneUser,
 	adminUpdateOneUserDetails,
-	adminDeleteOneUser
+	adminDeleteOneUser,
+	updateUserShippingInfo
 } = require('../controllers/userController');
 
 const { isLoggedIn, customRole } = require('../middlewares/auth');
@@ -27,7 +28,9 @@ userRouter.route('/password/reset/:token').post(restPassword);
 userRouter.route('/userdeshboard').get(isLoggedIn, getLoggedInUserDetails);
 userRouter.route('/password/update').post(isLoggedIn, updatePassword);
 userRouter.route('/userdashboard/update').put(isLoggedIn, updateUserDetails);
-
+userRouter
+	.route('/userdashboard/updateshippinginfo')
+	.put(isLoggedIn, updateUserShippingInfo);
 // admin route
 userRouter
 	.route('/admin/users')
