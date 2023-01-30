@@ -4,7 +4,7 @@ const { getOneProduct } = require('../controllers/productController');
 const BigPromise = require('../middlewares/bigPromise');
 const customError = require('../utils/customError');
 
-exports.addToCart = BigPromise(async (req, res) => {
+exports.addToCart = BigPromise(async (req, res, next) => {
 	let usersCart = await cartModal.findOne({ user: req.user._id });
 	const product = await productModel.findById(req.body.product);
 	if (!usersCart) {
@@ -25,11 +25,25 @@ exports.getAllCart = BigPromise(async (req, res) => {
 });
 
 exports.deleteFromCart = BigPromise(async (req, res) => {
-	const id = req.params.id;
+	const userId = req.user._id;
+	const productId = req.params.id;
 
-	const item = await cartModal.findByIdAndRemove(id);
+	const item = await cartModal.findOne({ user: userId });
 
-	res.status(200).json(item);
+	updatedItems = item.cartItem.filter(value => {
+		console.log(value._id, productId);
+		return value._id == productId;
+	});
+
+	console.log(updatedItems);
+	const p = await cartModal.findOneAndUpdate(
+		{ user: userId },
+		{
+			cartItem: updatedItems
+		},
+		{ new: true }
+	);
+	res.status(200).json({ success: true, p });
 });
 
 exports.updateCart = async (req, res) => {
